@@ -355,6 +355,10 @@
       window.scrollTo(0, 0);
       initPage();
       if (window.THMusic) window.THMusic.render();
+      // Soft navigations don't reload, so tell Google Analytics about the new page.
+      if (typeof window.gtag === 'function') {
+        window.gtag('event', 'page_view', { page_location: location.href, page_path: location.pathname, page_title: document.title });
+      }
     }
 
     var pending = 0;

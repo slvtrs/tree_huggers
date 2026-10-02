@@ -5,6 +5,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="csrf" content="<?= e(csrf_token()) ?>">
+<?php if (!empty($config['ga_id'])): ?>
+<!-- same analytics as the rest of slvtrs.com; honors the internal_traffic cookie -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=<?= e($config['ga_id']) ?>"></script>
+<script src="<?= e($config['ga_script']) ?>"></script>
+<?php endif ?>
 <title><?= e($title ? $title . ' - ' . $config['site_name'] : $config['site_name'] . ' - ' . $config['tagline']) ?></title>
 <link rel="icon" href="data:image/svg+xml,<?= rawurlencode(tree_sprite(1)) ?>">
 <link rel="preconnect" href="https://fonts.googleapis.com">

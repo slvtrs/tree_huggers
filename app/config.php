@@ -3,6 +3,11 @@
 return [
     'site_name'   => 'Tree Huggers',
     'tagline'     => 'a map of trees people love',
+    // Google Analytics: same property and shared analytics.js as the rest of slvtrs.com
+    // (it honors the internal_traffic cookie). Set to null to disable.
+    'ga_id'       => 'G-WKWPJB3H3B',
+    'ga_script'   => 'https://slvtrs.com/analytics.js',
+
     'debug'       => true, // TEMPORARY: show errors while we get the first deploy working
     'base_path'   => null,  // e.g. '/tree_huggers'; null = detect automatically
 
