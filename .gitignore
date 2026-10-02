@@ -1,0 +1,17 @@
+# runtime data (JSON "database", caches, uploads)
+data/trees/*
+data/users/*
+data/cache/*
+data/locks/*
+data/counter.json
+public/uploads/*
+!data/trees/.gitkeep
+!data/users/.gitkeep
+!data/cache/.gitkeep
+!data/locks/.gitkeep
+!public/uploads/.gitkeep
+!public/uploads/.htaccess
+
+app/config.local.php
+.DS_Store
+data/error.log

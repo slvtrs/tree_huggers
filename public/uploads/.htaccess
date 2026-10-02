@@ -1,0 +1,9 @@
+# Uploaded photos only. Never execute anything in here.
+Options -Indexes -ExecCGI
+<FilesMatch "\.(php|phtml|phar|pl|py|cgi|sh)$">
+  Require all denied
+</FilesMatch>
+RemoveHandler .php .phtml .phar
+<IfModule mod_headers.c>
+  Header set Cache-Control "public, max-age=604800"
+</IfModule>

@@ -1,0 +1,19 @@
+Options -Indexes -MultiViews
+DirectoryIndex index.php
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  # Serve real files and directories directly; everything else goes to index.php.
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^ index.php [L]
+</IfModule>
+
+# If app/ or data/ ended up inside the web root, hide them.
+RedirectMatch 404 ^/(app|data)(/|$)
+
+<IfModule mod_headers.c>
+  Header set X-Content-Type-Options "nosniff"
+  Header set X-Frame-Options "SAMEORIGIN"
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>

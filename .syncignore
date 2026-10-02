@@ -1,0 +1,12 @@
+# Files sshlvtrs_sync / syncvtrs must never push: the live JSON database,
+# uploaded photos, caches and logs live on the server only.
+data/trees/*.json
+data/users/*.json
+data/cache/*
+data/locks/*
+data/counter.json
+data/error.log
+public/uploads/*.jpg
+app/config.local.php
+deploy.sh
+.syncignore
