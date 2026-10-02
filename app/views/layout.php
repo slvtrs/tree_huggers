@@ -21,6 +21,8 @@
       <div class="tagline"><?= e($config['tagline']) ?></div>
     </td>
     <td class="nav-cell" align="right">
+      <span class="music-controls">
+        <span id="music-name" class="music-name" aria-live="polite"></span>
       <button type="button" id="music-toggle" class="music" title="Music" aria-label="Toggle music" aria-pressed="false">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 10" width="30" height="25" shape-rendering="crispEdges" class="px">
           <path fill="#1a1a1a" d="M7 0h1v1H7zM6 1h2v1H6zM5 2h3v1H5zM1 3h7v1H1zM1 4h7v1H1zM1 5h7v1H1zM1 6h7v1H1zM5 7h3v1H5zM6 8h2v1H6zM7 9h1v1H7z"/>
@@ -29,6 +31,13 @@
           <path class="slash" fill="#c00000" d="M1 9h2v1H1zM2 8h2v1H2zM3 7h2v1H3zM4 6h2v1H4zM5 5h2v1H5zM6 4h2v1H6zM7 3h2v1H7zM8 2h2v1H8zM9 1h2v1H9zM10 0h2v1H10z"/>
         </svg>
       </button>
+      <button type="button" id="music-next" class="music" title="Next song" aria-label="Next song">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 10" width="30" height="25" shape-rendering="crispEdges" class="px">
+          <path fill="#1a1a1a" d="M1 1h1v8H1zM2 2h1v6H2zM3 3h1v4H3zM4 4h1v2H4zM6 1h1v8H6zM7 2h1v6H7zM8 3h1v4H8zM9 4h1v2H9zM10 1h1v8H10z"/>
+          <path fill="#3fa34d" d="M2 3h1v4H2zM3 4h1v2H3zM7 3h1v4H7zM8 4h1v2H8z"/>
+        </svg>
+      </button>
+      </span>
       <div class="nav">
         [ <a href="<?= url('/') ?>">Map</a> |
         <a href="<?= url('/trees') ?>">All Trees</a> |
