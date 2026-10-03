@@ -12,8 +12,3 @@ DirectoryIndex index.php
 # If app/ or data/ ended up inside the web root, hide them.
 RedirectMatch 404 ^/(app|data)(/|$)
 
-<IfModule mod_headers.c>
-  Header set X-Content-Type-Options "nosniff"
-  Header set X-Frame-Options "SAMEORIGIN"
-  Header set Referrer-Policy "strict-origin-when-cross-origin"
-</IfModule>

@@ -93,6 +93,8 @@ function user_create(string $username, string $password, string $passwordConfirm
     }
     if (strlen($password) < 8) {
         $errors['password'] = 'Password must be at least 8 characters.';
+    } elseif (strlen($password) > 200) {
+        $errors['password'] = 'Password is too long (200 characters max).';
     } elseif ($password !== $passwordConfirm) {
         $errors['password_confirm'] = 'Passwords do not match.';
     }
@@ -124,6 +126,9 @@ function user_create(string $username, string $password, string $passwordConfirm
 function user_authenticate(string $username, string $password): array
 {
     $generic = 'Wrong username or password.';
+    if (strlen($password) > 200) {
+        return [null, $generic];
+    }
     $user = user_find($username);
     if (!$user) {
         // Burn similar time as a real check so usernames are harder to enumerate.

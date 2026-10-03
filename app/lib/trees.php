@@ -98,31 +98,38 @@ function tree_apply_input(array $tree, array $input, ?array $photoFile): array
 {
     $errors = [];
 
-    $title = trim((string) ($input['title'] ?? ''));
-    $title = preg_replace('/\s+/', ' ', $title);
-    if ($title === '' || mb_strlen($title) > 80) {
+    global $config;
+    $title = clean_text($input['title'] ?? '', 80);
+    if ($title === '') {
         $errors['title'] = 'Give your tree a name (up to 80 characters).';
     }
-    $tree['title'] = mb_substr($title, 0, 80);
+    $tree['title'] = $title;
 
-    $desc = trim(str_replace("\r\n", "\n", (string) ($input['description'] ?? '')));
-    if (mb_strlen($desc) > 3000) {
+    $desc = clean_text($input['description'] ?? '', 3000, true);
+    if (mb_strlen((string) ($input['description'] ?? '')) > 3000) {
         $errors['description'] = 'Description is too long (3000 characters max).';
     }
-    $tree['description'] = mb_substr($desc, 0, 3000);
+    if (empty($tree['user']) && count_urls($desc) > $config['max_description_urls']) {
+        $errors['description'] = 'Please keep links to a minimum. Log in if you need to include more.';
+    }
+    $tree['description'] = $desc;
 
     // Species: JSON from the picker widget, validated here.
     $species = [];
     $raw = json_decode((string) ($input['species_json'] ?? '[]'), true);
     if (is_array($raw)) {
         foreach (array_slice($raw, 0, TREE_MAX_SPECIES) as $s) {
-            if (!is_array($s) || empty($s['id']) || empty($s['name'])) {
+            if (!is_array($s) || !is_numeric($s['id'] ?? null) || (int) $s['id'] <= 0) {
+                continue;
+            }
+            $name = clean_text($s['name'] ?? '', 100);
+            if ($name === '') {
                 continue;
             }
             $species[] = [
                 'id'          => (int) $s['id'],
-                'name'        => mb_substr(trim((string) $s['name']), 0, 100),
-                'common_name' => mb_substr(trim((string) ($s['common_name'] ?? '')), 0, 100),
+                'name'        => $name,
+                'common_name' => clean_text($s['common_name'] ?? '', 100),
             ];
         }
     }

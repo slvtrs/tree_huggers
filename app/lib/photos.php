@@ -52,6 +52,15 @@ function photo_process(?array $file, string $treeId): array
         return ['ok' => false, 'error' => 'Please upload a JPEG, PNG, GIF, or WebP image.'];
     }
 
+    // Refuse decompression bombs: check the declared dimensions before decoding.
+    $info = @getimagesize($file['tmp_name']);
+    if (!$info || $info[0] < 1 || $info[1] < 1) {
+        return ['ok' => false, 'error' => 'That image could not be read.'];
+    }
+    if ($info[0] * $info[1] > $config['max_image_pixels'] || $info[0] > 12000 || $info[1] > 12000) {
+        return ['ok' => false, 'error' => 'That image is too large in dimensions. Please resize it below ' . round($config['max_image_pixels'] / 1e6) . ' megapixels.'];
+    }
+
     $gps = null;
     $orientation = 1;
     if ($mime === 'image/jpeg' && function_exists('exif_read_data')) {

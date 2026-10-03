@@ -40,6 +40,7 @@ require APP_DIR . '/lib/photos.php';
 require APP_DIR . '/lib/species.php';
 require APP_DIR . '/lib/trees.php';
 require APP_DIR . '/lib/claims.php';
+require APP_DIR . '/lib/security.php';
 
 foreach (['trees', 'users', 'cache', 'locks'] as $dir) {
     db_dir($dir);
@@ -60,13 +61,19 @@ session_set_cookie_params([
 ]);
 session_start();
 
+send_security_headers($config);
+
 // Error handling: exceptions render the error page; if even that fails, or a
 // fatal error slips past, emit a plain-text message instead of a blank 500.
 // Details are shown only when 'debug' is on, and always written to data/error.log.
 function th_log_error(string $text): void
 {
     global $config;
-    @file_put_contents($config['data_dir'] . '/error.log', '[' . gmdate('c') . '] ' . $text . "\n", FILE_APPEND | LOCK_EX);
+    $log = $config['data_dir'] . '/error.log';
+    if (is_file($log) && filesize($log) > 2 * 1024 * 1024) {
+        @rename($log, $log . '.1'); // keep one rotated copy, never grow without bound
+    }
+    @file_put_contents($log, '[' . gmdate('c') . '] ' . $text . "\n", FILE_APPEND | LOCK_EX);
     error_log($text);
 }
 

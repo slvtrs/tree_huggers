@@ -143,8 +143,30 @@
     }
   }
 
+  // iOS mutes Web Audio when the ringer switch is on silent, because it counts
+  // as "ambient" sound. Playing a (silent) HTML audio element flips the audio
+  // session to "playback", which the silent switch does not affect. Safari 17+
+  // also exposes this directly via navigator.audioSession.
+  var unlocker = null;
+  function unlockIOS() {
+    try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}
+    if (unlocker) return;
+    unlocker = document.createElement('audio');
+    unlocker.setAttribute('playsinline', '');
+    unlocker.setAttribute('aria-hidden', 'true');
+    unlocker.loop = true;
+    unlocker.preload = 'auto';
+    unlocker.style.display = 'none';
+    // 50 ms of silence, 8 kHz mono 16-bit WAV
+    unlocker.src = 'data:audio/wav;base64,UklGRkQDAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YSADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==';
+    document.body.appendChild(unlocker);
+    var p = unlocker.play();
+    if (p && p.catch) p.catch(function () {});
+  }
+
   function start() {
     if (!init() || playing) return;
+    unlockIOS();
     ctx.resume().then(function () {
       if (ctx.state !== 'running' || playing) return;
       playing = true;
@@ -157,6 +179,7 @@
     playing = false;
     clearInterval(timer); timer = null;
     if (ctx) ctx.suspend();
+    if (unlocker) { unlocker.pause(); }
     render();
   }
 

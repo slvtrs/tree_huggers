@@ -35,5 +35,5 @@ function dispatch(string $method, string $path): void
             return;
         }
     }
-    abort(404, "No such page: " . $path);
+    abort(404);
 }

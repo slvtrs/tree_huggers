@@ -20,6 +20,7 @@ route('GET', '/trees/new', function () {
 
 route('POST', '/trees', function () {
     csrf_check();
+    throttle('tree_create', ...$GLOBALS['config']['limits']['tree_create']);
     if (!empty($_POST['website'])) { // honeypot field, hidden from humans
         redirect('/');
     }
@@ -69,6 +70,7 @@ route('GET', '/trees/{id}/edit', function ($p) {
 
 route('POST', '/trees/{id}', function ($p) {
     csrf_check();
+    throttle('tree_edit', ...$GLOBALS['config']['limits']['tree_edit']);
     $tree = tree_find($p['id']) ?? abort(404);
     tree_can_edit(current_user(), $tree) || abort(403, 'Only the person who hugged this tree can edit it.');
     [$updated, $errors] = tree_apply_input($tree, $_POST, $_FILES['photo'] ?? null);
@@ -99,6 +101,7 @@ route('GET', '/signup', function () {
 
 route('POST', '/signup', function () {
     csrf_check();
+    throttle('signup', ...$GLOBALS['config']['limits']['signup']);
     if (!empty($_POST['website'])) redirect('/');
     [$user, $errors] = user_create((string) ($_POST['username'] ?? ''), (string) ($_POST['password'] ?? ''), (string) ($_POST['password_confirm'] ?? ''));
     if (!$user) {
@@ -117,6 +120,7 @@ route('GET', '/login', function () {
 
 route('POST', '/login', function () {
     csrf_check();
+    throttle('login', ...$GLOBALS['config']['limits']['login']);
     [$user, $error] = user_authenticate((string) ($_POST['username'] ?? ''), (string) ($_POST['password'] ?? ''));
     if (!$user) {
         return render('users/login', ['error' => $error, 'username' => $_POST['username'] ?? '', 'title' => 'Log in']);
@@ -155,11 +159,12 @@ route('GET', '/u/{username}', function ($p) {
 // The browser mirrors its claim tokens into localStorage; if the cookie was
 // lost, app.js posts them back here so the server can re-issue the cookie.
 route('POST', '/api/claims/sync', function () {
+    throttle('claims_sync', $GLOBALS['config']['limits']['claims_sync'][0], $GLOBALS['config']['limits']['claims_sync'][1], true);
     $sent = (string) ($_SERVER['HTTP_X_CSRF_TOKEN'] ?? '');
     if ($sent === '' || !hash_equals(csrf_token(), $sent)) {
         json_response(['error' => 'bad token'], 403);
     }
-    $body = json_decode((string) file_get_contents('php://input'), true);
+    $body = json_decode((string) file_get_contents('php://input', false, null, 0, 64 * 1024), true);
     $incoming = is_array($body['claims'] ?? null) ? $body['claims'] : [];
     $claims = claims_all();
     $drop = [];
@@ -199,10 +204,12 @@ route('GET', '/api/trees.json', function () {
 });
 
 route('GET', '/api/species', function () {
+    throttle('api', $GLOBALS['config']['limits']['api'][0], $GLOBALS['config']['limits']['api'][1], true);
     json_response(species_search((string) ($_GET['q'] ?? '')));
 });
 
 route('GET', '/api/species/nearby', function () {
+    throttle('api', $GLOBALS['config']['limits']['api'][0], $GLOBALS['config']['limits']['api'][1], true);
     $lat = $_GET['lat'] ?? null;
     $lng = $_GET['lng'] ?? null;
     if (!is_numeric($lat) || !is_numeric($lng) || abs((float) $lat) > 90 || abs((float) $lng) > 180) {

@@ -9,10 +9,10 @@
       <div class="hint">3-20 letters, numbers or underscores. Saved in lowercase, so RatinLoot becomes ratinloot.</div>
       <?php if (isset($errors['username'])): ?><div class="err"><?= e($errors['username']) ?></div><?php endif ?></td></tr>
     <tr><th><label for="password">Password</label></th>
-      <td><input type="password" id="password" name="password" minlength="8" required autocomplete="new-password">
+      <td><input type="password" id="password" name="password" minlength="8" maxlength="200" required autocomplete="new-password">
       <?php if (isset($errors['password'])): ?><div class="err"><?= e($errors['password']) ?></div><?php endif ?></td></tr>
     <tr><th><label for="password_confirm">Again</label></th>
-      <td><input type="password" id="password_confirm" name="password_confirm" minlength="8" required autocomplete="new-password">
+      <td><input type="password" id="password_confirm" name="password_confirm" minlength="8" maxlength="200" required autocomplete="new-password">
       <?php if (isset($errors['password_confirm'])): ?><div class="err"><?= e($errors['password_confirm']) ?></div><?php endif ?></td></tr>
     <tr><th></th><td><button type="submit" class="primary">Create account</button></td></tr>
   </table>

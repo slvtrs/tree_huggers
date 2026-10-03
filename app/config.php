@@ -8,7 +8,20 @@ return [
     'ga_id'       => 'G-WKWPJB3H3B',
     'ga_script'   => 'https://slvtrs.com/analytics.js',
 
-    'debug'       => true, // TEMPORARY: show errors while we get the first deploy working
+    'csp'         => true,  // Content-Security-Policy header (see lib/security.php)
+
+    // Abuse limits, per IP address: [max actions, window in seconds]
+    'limits' => [
+        'tree_create' => [10, 3600],
+        'tree_edit'   => [40, 3600],
+        'signup'      => [5, 3600],
+        'login'       => [20, 900],
+        'api'         => [60, 60],
+        'claims_sync' => [20, 60],
+    ],
+    'max_description_urls' => 2, // more than this in an anonymous hug looks like spam
+
+    'debug'       => false, // true shows stack traces in the browser; errors always go to data/error.log
     'base_path'   => null,  // e.g. '/tree_huggers'; null = detect automatically
 
     // Storage. By default data/ lives beside app/, outside the web root.
@@ -25,6 +38,7 @@ return [
 
     // Photos
     'max_upload_bytes' => 10 * 1024 * 1024,
+    'max_image_pixels' => 30 * 1000 * 1000, // refuse decompression bombs (30 megapixels)
     'photo_max_px'     => 1600,
     'thumb_px'         => 240,
 

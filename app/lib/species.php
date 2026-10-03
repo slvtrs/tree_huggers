@@ -50,8 +50,16 @@ function cache_get(string $key)
 
 function cache_set(string $key, $value): void
 {
-    $path = db_dir('cache') . '/' . sha1($key) . '.json';
-    file_put_contents($path, json_encode(['k' => $key, 'v' => $value]), LOCK_EX);
+    global $config;
+    $dir = db_dir('cache');
+    file_put_contents($dir . '/' . sha1($key) . '.json', json_encode(['k' => $key, 'v' => $value]), LOCK_EX);
+    if (random_int(1, 100) === 1) {
+        foreach (glob($dir . '/*.json') ?: [] as $f) {
+            if (@filemtime($f) < time() - $config['cache_ttl']) {
+                @unlink($f);
+            }
+        }
+    }
 }
 
 function cached_json(string $url): ?array

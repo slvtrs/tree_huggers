@@ -99,8 +99,6 @@
     // ---- base map ----
     function makeMap(el, opts) {
       opts = opts || {};
-      var palette = 'color';
-      try { palette = localStorage.getItem('th_palette') || palette; } catch (e) {}
       var map = L.map(el, {
         center: opts.center || CFG.center || [20, 0],
         zoom: opts.zoom || CFG.zoom || 3,
@@ -110,9 +108,8 @@
       map.attributionControl.setPrefix('');
       var tiles = L.pixelLayer({
         tileUrl: CFG.tileUrl, attribution: CFG.attribution,
-        pixelSize: CFG.pixelSize || 4, palette: palette
+        pixelSize: CFG.pixelSize || 4
       }).addTo(map);
-      if (opts.paletteControl !== false) map.addControl(new L.Control.Palette({ layer: tiles }));
       return map;
     }
 
@@ -164,7 +161,7 @@
     var one = document.querySelector('#map[data-tree]');
     if (one) {
       var t = JSON.parse(one.getAttribute('data-tree'));
-      var m = makeMap(one, { center: [t.lat, t.lng], zoom: 16, paletteControl: false });
+      var m = makeMap(one, { center: [t.lat, t.lng], zoom: 16 });
       L.marker([t.lat, t.lng], { icon: TREE_ICON_HI, title: t.title }).addTo(m);
     }
 
@@ -186,7 +183,7 @@
       var has = picker.dataset.lat !== '' && picker.dataset.lng !== '';
       var pmap = makeMap(picker, {
         center: has ? [parseFloat(picker.dataset.lat), parseFloat(picker.dataset.lng)] : undefined,
-        zoom: has ? 16 : undefined, paletteControl: false
+        zoom: has ? 16 : undefined
       });
       var marker = null;
       function place(lat, lng, pan) {

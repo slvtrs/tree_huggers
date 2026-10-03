@@ -3,6 +3,7 @@ data/trees/*
 data/users/*
 data/cache/*
 data/locks/*
+data/ratelimit/*
 data/counter.json
 public/uploads/*
 !data/trees/.gitkeep

@@ -169,11 +169,6 @@ button.busy { min-width: 11em; text-align: left; }
 .popup b { font-family: var(--pixel); font-size: 9px; line-height: 1.6; }
 .popup img { display: block; border: 2px solid var(--ink); margin: 6px 0; width: 120px; height: 120px; object-fit: cover; }
 .popup .species { font-style: italic; color: #444; }
-.th-palette { background: var(--panel); border: 2px solid var(--ink); box-shadow: 3px 3px 0 #000; font-family: var(--pixel); font-size: 8px; }
-.th-palette button { font-size: 8px; padding: 6px 7px; border: 0; border-right: 2px solid var(--ink); box-shadow: none; background: var(--panel); }
-.th-palette button:last-child { border-right: 0; }
-.th-palette button:active { transform: none; }
-.th-palette button.on { background: var(--leaf); color: #fff; }
 .leaflet-marker-icon.th-tree { image-rendering: pixelated; filter: drop-shadow(2px 2px 0 rgba(0,0,0,.5)); }
 
 /* show page */
@@ -182,6 +177,14 @@ table.show td { padding: 0 0 12px 0; }
 img.photo { max-width: 100%; border: 3px solid var(--ink); box-shadow: 6px 6px 0 #000; display: block; }
 .no-photo { border: 3px dashed var(--ink); padding: 40px 10px; text-align: center; background: var(--panel); }
 .prose { background: var(--panel); border: 2px solid var(--ink); padding: 10px 14px; max-width: 70ch; }
+
+/* error page */
+.error-page { text-align: center; padding: 24px 10px 12px; }
+.error-art { margin-bottom: 8px; filter: drop-shadow(4px 4px 0 rgba(0,0,0,.25)); }
+.error-art svg { transform: rotate(-12deg); }
+.error-page p { max-width: 48ch; margin: 10px auto; }
+.error-detail { background: var(--panel); border: 2px dashed var(--ink); padding: 8px; display: inline-block; max-width: 70ch; text-align: left; }
+.error-links { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin: 18px auto; }
 
 /* footer */
 .footer { margin-top: 8px; font-size: 12px; }

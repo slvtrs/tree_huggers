@@ -4,6 +4,7 @@ data/trees/*.json
 data/users/*.json
 data/cache/*
 data/locks/*
+data/ratelimit/*
 data/counter.json
 data/error.log
 public/uploads/*.jpg

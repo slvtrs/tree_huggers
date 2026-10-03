@@ -1,5 +1,5 @@
 /* PixelLayer: a Leaflet GridLayer that fetches ordinary raster tiles, shrinks
- * them, snaps every pixel to a small palette (with optional ordered dithering),
+ * them, snaps every pixel to a small palette (with ordered dithering),
  * and blows them back up with no smoothing. Real geography, 8-bit look. */
 (function (L) {
   'use strict';
@@ -7,13 +7,10 @@
 
   var PALETTES = {
     color: {
-      mode: 'nearest',
       colors: ['#f8f0d8', '#ffffff', '#60a8e8', '#78c850', '#388040', '#f8d870', '#f08080',
                '#c8b8a8', '#a0a0a0', '#505050', '#202020', '#e8c8a8', '#a8d8f8', '#c0f0a0',
                '#f8f8a0', '#e0b0d0', '#e8e4dc', '#d0ccc4']
     },
-    gameboy: { mode: 'luma', colors: ['#0f380f', '#306230', '#8bac0f', '#9bbc0f'] },
-    mono:    { mode: 'luma', colors: ['#111111', '#555555', '#aaaaaa', '#f4f4f4'] }
   };
 
   var BAYER = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]];
@@ -39,16 +36,8 @@
       this._setPaletteCache();
     },
 
-    setPalette: function (name) {
-      if (!PALETTES[name]) return;
-      this.options.palette = name;
-      this._setPaletteCache();
-      this.redraw();
-    },
-
     _setPaletteCache: function () {
       var p = PALETTES[this.options.palette] || PALETTES.color;
-      this._mode = p.mode;
       this._rgb = p.colors.map(hexToRgb);
     },
 
@@ -87,7 +76,7 @@
     },
 
     _quantize: function (d, w, h) {
-      var pal = this._rgb, n = pal.length, luma = this._mode === 'luma';
+      var pal = this._rgb, n = pal.length;
       var dither = this.options.dither, strength = this.options.ditherStrength;
       for (var y = 0; y < h; y++) {
         for (var x = 0; x < w; x++) {
@@ -97,17 +86,11 @@
             var t = (BAYER[y & 3][x & 3] / 16 - 0.5) * strength;
             r += t; g += t; b += t;
           }
-          var best;
-          if (luma) {
-            var l = 0.299 * r + 0.587 * g + 0.114 * b;
-            best = Math.min(n - 1, Math.max(0, Math.floor(l / (256 / n))));
-          } else {
-            var bd = 1e9; best = 0;
-            for (var k = 0; k < n; k++) {
-              var c = pal[k], dr = r - c[0], dg = g - c[1], db = b - c[2];
-              var dist = dr * dr * 0.3 + dg * dg * 0.59 + db * db * 0.11;
-              if (dist < bd) { bd = dist; best = k; }
-            }
+          var best = 0, bd = 1e9;
+          for (var k = 0; k < n; k++) {
+            var c = pal[k], dr = r - c[0], dg = g - c[1], db = b - c[2];
+            var dist = dr * dr * 0.3 + dg * dg * 0.59 + db * db * 0.11;
+            if (dist < bd) { bd = dist; best = k; }
           }
           var out = pal[best];
           d[i] = out[0]; d[i + 1] = out[1]; d[i + 2] = out[2]; d[i + 3] = 255;
@@ -116,30 +99,7 @@
     }
   });
 
-  // Little control to switch palettes; remembers the choice.
-  var PaletteControl = L.Control.extend({
-    options: { position: 'topright', layer: null, storageKey: 'th_palette' },
-    onAdd: function () {
-      var div = L.DomUtil.create('div', 'th-palette leaflet-bar');
-      var layer = this.options.layer, self = this;
-      L.DomEvent.disableClickPropagation(div);
-      Object.keys(PALETTES).forEach(function (name) {
-        var b = L.DomUtil.create('button', name === layer.options.palette ? 'on' : '', div);
-        b.type = 'button';
-        b.textContent = name.toUpperCase();
-        b.title = 'Palette: ' + name;
-        L.DomEvent.on(b, 'click', function () {
-          layer.setPalette(name);
-          try { localStorage.setItem(self.options.storageKey, name); } catch (e) {}
-          Array.prototype.forEach.call(div.children, function (c) { c.className = c === b ? 'on' : ''; });
-        });
-      });
-      return div;
-    }
-  });
-
   L.PixelLayer = PixelLayer;
   L.pixelLayer = function (opts) { return new PixelLayer(opts); };
   L.PixelLayer.PALETTES = PALETTES;
-  L.Control.Palette = PaletteControl;
 })(window.L);
